@@ -4,7 +4,7 @@
 #  (Framenet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
 #  (ArgPointer)-ARGX=(VN Role);(FN Role/Optional Extra Fn Roles)
 import re
-from AddZeros import addZeros
+from task1.loaders.AddZeros import addZeros
 sem_parser = ["doc", "sent", "token", "stand", "verb", "verbnet", "frame", "PB", "SI", "TAM", "args"]
 
 class sem_loader:

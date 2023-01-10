@@ -1,7 +1,7 @@
 # This Procedure is used for extracting tokens from ptb file (PTB3 style or ON5.0 style)
 
-from SpecialCases import special_transform
-from AddZeros import addZeros
+from task1.loaders.SpecialCases import special_transform
+from task1.loaders.AddZeros import addZeros
 from task1.utils.TreeUtils import Node
 import re
 
@@ -10,7 +10,7 @@ class ptb_loader:
 
     def load(path):
         ptb = open(path, "r")
-        doc = re.search(r"\\wsj_(\d*)\.", path).groups()[0]
+        doc = re.search(r"/wsj_(\d*)", path).groups()[0]
         index = -1
         sentence_set = {}
         stack = []

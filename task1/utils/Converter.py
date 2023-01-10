@@ -2,7 +2,7 @@ from GraphUtils import deep_grapher
 from GraphUtils import graph_painter
 from ArgMatcher import argmapper
 import re
-from loaders.PMLoader import PMLoader as pm
+from task1.loaders.PMLoader import PMLoader as pm
 
 
 def DB_PM_converter(deepbank):

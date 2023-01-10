@@ -1,11 +1,11 @@
 # Match Deepbank files with Semlink
 
-from utils.GraphUtils import deep_grapher
-from utils.GraphUtils import graph_painter
-from utils.VerbChecker import verb_checker
-from utils.ArgMatcher import argmapper
+from task1.utils.GraphUtils import deep_grapher
+from task1.utils.GraphUtils import graph_painter
+from task1.utils.VerbChecker import verb_checker
+from task1.utils.ArgMatcher import argmapper
 import re
-from loaders.PMLoader import PMLoader as pm
+from task1.loaders.PMLoader import PMLoader as pm
 
 def DB_SL_matcher(deepbank, semlink, wsj, paint_mode=False):
     print("===================Start Deepbank-Semlink Matching===================")
