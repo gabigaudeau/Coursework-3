@@ -59,7 +59,7 @@ if __name__ == "__main__":
             string = str(i)
 
         for letter in ['a', 'b', 'c', 'd', 'e']:
-            directory = "../data/deepbank/DeepBank1.1/wsj" + string + letter
+            directory = "../data/deepbank/wsj" + string + letter
             if os.path.exists(directory):
                 deepbank.update(traverse_dir(directory, deep_loader))
 

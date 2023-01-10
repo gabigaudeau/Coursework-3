@@ -111,7 +111,6 @@ class deep_loader:
     #     return sentence_set
 
     def load(path):
-        print(path)
         sentence_set = {}
         with gzip.open(path, 'r') as pf:
             sentence = {}
