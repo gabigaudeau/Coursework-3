@@ -70,7 +70,45 @@ class deep_loader:
 
             return True
 
-        attr = []
+    # def load(path):
+    #     sentence_set = {}
+    #     with gzip.open(path, 'r') as pf:
+    #         sentence = {}
+    #         nodes = ""
+    #         flag = False
+    #         for line in pf:
+    #             line = line.decode('utf-8')
+    #             if line[0] == "}":
+    #                 nodes = "{\n" + nodes + "\n}"
+    #                 sentence["nodes"] = nodes
+    #                 break
+    #
+    #             matcher = re.match(r"\[\d*\] \(\d of \d\) \{\d\} `(.*)'", line)
+    #             if matcher is not None:
+    #                 sentence["src"] = matcher.groups()[0]
+    #
+    #                 # special rules
+    #                 if sentence["src"][-4:] == "U.S.":
+    #                     sentence["src"] += "."
+    #                 if sentence["src"][-5:] == 'U.S."':
+    #                     sentence["src"] = sentence["src"][:-1] + '."'
+    #
+    #             if flag:
+    #                 node = re.match(r"(.*):(.*)<(\d*):(\d*)>(.*)", line).group()
+    #                 nodes = nodes + "\n" + node
+    #
+    #             matcher = re.search(r"^{", line)
+    #             if matcher:
+    #                 nodes = line[1:-2] + ":" + nodes
+    #                 flag = True
+    #
+    #         matcher = re.search(r"/2(\d{4})(\d{3}).gz", path).groups()
+    #         sentence["doc"] = matcher[0]
+    #         sentence["sent"] = matcher[1]
+    #
+    #         if deep_loader.convert(sentence):
+    #             sentence_set[matcher[0] + matcher[1]] = sentence
+    #     return sentence_set
 
     def load(path):
         print(path)
@@ -78,10 +116,13 @@ class deep_loader:
         with gzip.open(path, 'r') as pf:
             sentence = {}
             nodes = []
+            string = ""
             flag = False
             for line in pf:
                 line = line.decode('utf-8')
                 if line[0] == "}":
+                    string = "{" + string + "\n}"
+                    sentence["string"] = string
                     sentence["nodes"] = nodes
                     break
 
@@ -96,11 +137,14 @@ class deep_loader:
                         sentence["src"] = sentence["src"][:-1] + '."'
 
                 if flag:
+                    string = string + "\n" + re.match(r"(.*):(.*)<(\d*):(\d*)>(.*)", line).group()
                     node = list(re.search(r"(.*):(.*)<(\d*):(\d*)>(.*)", line.strip()).groups())
                     nodes.append(node)
 
+
                 matcher = re.search(r"^{", line)
                 if matcher:
+                    string = line[1:-2] + ":" + string
                     sentence["head"] = line[1:-2]
                     flag = True
 

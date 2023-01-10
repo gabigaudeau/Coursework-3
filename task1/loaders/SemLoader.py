@@ -19,6 +19,7 @@ class sem_loader:
             doc = re.search(r"\_(.*)\.", path).groups()[0]
             sent = "-1"
             verbs = None
+            miss = None
             for line in file:
                 sem_loader.total_verb += 1
                 args = line.strip().split(" ")

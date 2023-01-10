@@ -94,7 +94,7 @@ def deep_grapher(nodes_text, h, flagon=False, require_verb=False):
         return head, nodes, start_list
 
 def graph_painter(filename,raw, nodes,edges):
-    outputdir = 'C:\\Users\\wendeppkdc\\Desktop\\visualization\\'
+    outputdir = '/Users/gabriellegaudeau/Documents/Cambridge/\"L98 - Introduction to Computational Semantics\"/Coursework 3/Visuals'
     dot=Digraph(comment=raw,format="png")
 
     filename = outputdir + filename

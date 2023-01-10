@@ -7,7 +7,7 @@ from task1.loaders.PMLoader import PMLoader as pm
 
 def DB_PM_converter(deepbank):
     print("===================Start Deepbank-Predicate Matrix Matching===================")
-    argmapper.read(".\\arg_matcher")
+    argmapper.read("../arg_matcher")
     for sent in deepbank.keys():
         head, nodes, start_list, verb_list = deep_grapher(deepbank[sent]["nodes"], deepbank[sent]["head"],
                                                           require_verb=True)

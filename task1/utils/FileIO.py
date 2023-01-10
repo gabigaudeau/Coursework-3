@@ -7,6 +7,7 @@ from task1.loaders.PTBLoader import ptb_loader
 from task1.loaders.ONCompleter import on_completer
 from task1.utils.Matcher import DB_SL_matcher
 from task1.utils.Converter import DB_PM_converter
+from delphin.codecs import eds
 
 # (document_id) (sentence number) (token number) (standard) (verb-v) (VerbNet class)
 #  (Framenet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
@@ -37,41 +38,52 @@ if __name__ == "__main__":
 
     print("========================Start Basic Checking=========================")
 
-    wsjs = dict()
+    wsj = dict()
+    print("[1] Processing PennTreebank...")
     for i in range(25):
-        print("Penn Treebank folder: " + str(i))
         if i < 10:
             string = "0" + str(i)
         else:
             string = str(i)
-        wsj = traverse_dir("../data/wsj/" + string, ptb_loader)
-        wsjs.update(wsj)
+        wsj.update(traverse_dir("../data/wsj/" + string, ptb_loader))
 
-    deep_loader.set_src(wsjs)
+    deep_loader.set_src(wsj)
 
     deepbank = dict()
+    print("[2] Processing DeepBank...")
     for j in range(22):
-        print("DeepBank folder: " + str(j))
+
         if j < 10:
             string = string = "0" + str(j)
         else:
             string = str(i)
 
         for letter in ['a', 'b', 'c', 'd', 'e']:
-            directory = "../data/deepbank/wsj" + string + letter
+            directory = "../data/deepbank/DeepBank1.1/wsj" + string + letter
             if os.path.exists(directory):
                 deepbank.update(traverse_dir(directory, deep_loader))
 
-    semlink = traverse_dir("../data/semlink/00", sem_loader)
+    semlink = dict()
+    print("[3] Processing SemLink...")
+    for k in range(25):
+        print("SemLink folder: " + str(k))
+        if k < 10:
+            string = "0" + str(k)
+        else:
+            string = str(k)
+        semlink.update(traverse_dir("../data/semlink/" + string, sem_loader))
+
+    text_file = open("../output.txt", "w")
+    for key in deepbank.keys():
+        string = deepbank.get(key)["string"]
+        # graph = eds.loads(string)[0]
+        text_file.write(string)
+
+    text_file.close()
+
     print("Basic Checking Complete.")
     print("SemLink size: {}, Deepbank size: {}".format(len(semlink), len(deepbank)))
-    print(deepbank.get('0819006'))
 
-
-    # print("{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.".format(sem_loader.framemiss, sem_loader.total_verb, sem_loader.framemiss_sentence))
-    #DB_SL_matcher(deepbank,semlink,wsj, False)
+    print("{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.".format(sem_loader.framemiss, sem_loader.total_verb, sem_loader.framemiss_sentence))
+    # DB_SL_matcher(deepbank, semlink, wsj, False)
     # DB_PM_converter(deepbank)
-    # on_completer(wsj, "../data/ptb3")  # Fix on5.0 missing files with ptb files
-    # deepbank = traverse_dir("../data/deepbank/wsj00a", deep_loader)
-
-    # pm.init("../data/pm/PredicateMatrix.v1.3.txt")
