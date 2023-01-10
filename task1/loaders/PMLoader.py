@@ -1,8 +1,6 @@
 #This file is used for loading predicate matrix
 class PMLoader:
 
-    #pb_index用于存储pb group-fn frame键值对
-    #fe_index用于存储pb role-fn frame element键值对
     pb_index={}
     fe_index={}
 

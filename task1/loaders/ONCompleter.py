@@ -1,7 +1,7 @@
 # It imports ptb_loader to extract tokens from PTB3,
 #          in order to deal with file missing from Ontonotes5.0
 
-from loaders.PTBLoader import ptb_loader
+from PTBLoader import ptb_loader
 
 # use ptb3 file to fit ON5
 def on_comleter(wsj, root_path):

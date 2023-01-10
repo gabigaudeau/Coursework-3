@@ -1,10 +1,9 @@
 # This Procedure is used for extracting tokens from ptb file (PTB3 style or ON5.0 style)
 
-from loaders.SpecialCases import special_transform
-from loaders.AddZeros import addZeros
-from utils.TreeUtils import Node
+from SpecialCases import special_transform
+from AddZeros import addZeros
+from task1.utils.TreeUtils import Node
 import re
-
 
 class ptb_loader:
     token_pattern = re.compile(r"[ \(]]")

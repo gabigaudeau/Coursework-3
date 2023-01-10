@@ -1,6 +1,6 @@
-from utils.GraphUtils import deep_grapher
-from utils.GraphUtils import graph_painter
-from utils.ArgMatcher import argmapper
+from GraphUtils import deep_grapher
+from GraphUtils import graph_painter
+from ArgMatcher import argmapper
 import re
 from loaders.PMLoader import PMLoader as pm
 

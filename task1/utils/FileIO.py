@@ -1,12 +1,12 @@
 import os
 import os.path
-from loaders.PMLoader import PMLoader as pm
-from loaders.DeepLoader import deep_loader
-from loaders.SemLoader import sem_loader
-from loaders.PTBLoader import ptb_loader
-from loaders.ONCompleter import on_comleter
-from utils.Matcher import DB_SL_matcher
-from utils.Converter import DB_PM_converter
+from task1.loaders.PMLoader import PMLoader as pm
+from task1.loaders.DeepLoader import deep_loader
+from task1.loaders.SemLoader import sem_loader
+from task1.loaders.PTBLoader import ptb_loader
+from task1.loaders.ONCompleter import on_comleter
+from Matcher import DB_SL_matcher
+from Converter import DB_PM_converter
 
 # (document_id) (sentence number) (token number) (standard) (verb-v) (VerbNet class)
 #  (Framenet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
