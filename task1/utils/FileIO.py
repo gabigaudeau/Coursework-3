@@ -28,7 +28,6 @@ def traverse_dir(path, operator):
             sentenceSet.update(operator.load(child))
     return sentenceSet
 
-
 #  sem_parser=["doc","sent","token","stand","verb","verbnet","frame","PB","SI","TAM","args"]
 #  deepbank_parser=["doc","sent","src","nodes","head"]
 
@@ -63,18 +62,16 @@ if __name__ == "__main__":
             if os.path.exists(directory):
                 deepbank.update(traverse_dir(directory, deep_loader))
 
-    # on_completer(wsj, "../data/ptb3")  # Fix on5.0 missing files with ptb files
-    # deepbank = traverse_dir("../data/deepbank/wsj00a", deep_loader)
-    # semlink = traverse_dir("../data/semlink/00", sem_loader)
-    # pm.init("../data/pm/PredicateMatrix.v1.3.txt")
+    semlink = traverse_dir("../data/semlink/00", sem_loader)
     print("Basic Checking Complete.")
-    print("Deepbank size: {}".format(len(deepbank)))
-    # print("{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.".format(sem_loader.framemiss,
-    #                                                                                       sem_loader.total_verb,
-    #                                                                                       sem_loader.framemiss_sentence))
-    # print()
+    print("SemLink size: {}, Deepbank size: {}".format(len(semlink), len(deepbank)))
+    print(deepbank.get('0819006'))
 
+
+    # print("{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.".format(sem_loader.framemiss, sem_loader.total_verb, sem_loader.framemiss_sentence))
     #DB_SL_matcher(deepbank,semlink,wsj, False)
     # DB_PM_converter(deepbank)
+    # on_completer(wsj, "../data/ptb3")  # Fix on5.0 missing files with ptb files
+    # deepbank = traverse_dir("../data/deepbank/wsj00a", deep_loader)
 
-    print(deepbank.get('0819006'))
+    # pm.init("../data/pm/PredicateMatrix.v1.3.txt")
