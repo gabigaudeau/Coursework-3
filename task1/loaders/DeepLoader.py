@@ -1,6 +1,6 @@
 # This Procedure is used for extracting tokens from Deepbank file (deepbank1.0 style)
 # It automatically convert deepbank-style word position labels (based on characters)
-# to PTB-style, which is based on extended tokens (including some -NONE- token)
+#          to PTB-style, which is based on extended tokens (including some -NONE- token)
 
 import re
 import gzip

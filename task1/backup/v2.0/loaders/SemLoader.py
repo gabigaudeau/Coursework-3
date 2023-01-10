@@ -52,4 +52,4 @@ class sem_loader:
             if miss:
                 sem_loader.framemiss_sentence += 1
 
-        return 
+        return sentence_set
