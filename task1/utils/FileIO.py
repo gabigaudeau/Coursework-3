@@ -1,14 +1,17 @@
 import os
 import os.path
-from task1.loaders.PMLoader import PMLoader as pm
+import re
+
 from task1.loaders.DeepLoader import deep_loader
 from task1.loaders.SemLoader import sem_loader
 from task1.loaders.PTBLoader import ptb_loader
+from delphin.codecs import eds
+from task1.loaders.PMLoader import PMLoader as pm
 from task1.loaders.ONCompleter import on_completer
 from task1.utils.Matcher import DB_SL_matcher
 from task1.utils.Converter import DB_PM_converter
-from delphin.codecs import eds
 
+# ------- FIELDS -------
 # (document_id) (sentence number) (token number) (standard) (verb-v) (VerbNet class)
 #  (FrameNet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
 #  (ArgPointer)-ARG X=(VN Role);(FN Role/Optional Extra Fn Roles)
@@ -19,6 +22,7 @@ sem_parser = ["doc", "sent", "token", "stand", "verb", "verbnet", "frame", "PB",
 deepbank_parser = ["doc", "sent", "src", "nodes", "head"]
 
 
+# ------- METHODS -------
 def traverse_dir(path, operator):
     sentence_set = {}
     parents = os.listdir(path)
@@ -53,7 +57,7 @@ def process_ptb():
     return wsj
 
 
-def process_db(loader):
+def process_db(deep_loader):
     print("[2] Processing DeepBank...")
 
     deepbank = dict()
@@ -85,6 +89,7 @@ def process_sml():
     return semlink
 
 
+# ------- MAIN -------
 if __name__ == "__main__":
     print("========================Start Basic Checking=========================")
 
@@ -107,11 +112,14 @@ if __name__ == "__main__":
     print("SemLink size: {}, Deepbank size: {}".format(len(semlink), len(deepbank)))
     print('{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.'.format(sem_loader.framemiss,
                                                                                           sem_loader.total_verb,
-                                                                                          sem_loader.framemiss_sentence))
+                                                                                          sem_loader.framemiss_sentence)
+          )
 
+    print("========================Start Main Process=========================")
     # Create output.txt file with all DB's EDS graphs.
     # create_eds_output(deepbank)
 
+    print("[4] Converting DB to EDS graphs...")
     graphs = {}
     for key in deepbank.keys():
         entry = deepbank.get(key)
@@ -123,6 +131,68 @@ if __name__ == "__main__":
 
     print(graphs)
 
+    print("[5] Looping to find verbs")
+    for key in graphs.keys():
+
+        # Check if corresponding SemLink entry exists, if not skip.
+        if key in semlink.keys():
+            sml = semlink.get(key)
+            graph = graphs.get(key)
+
+            for node in graph.nodes:
+                # Check if predicate is verb, and if it is match it to SemLink verb.
+                if re.match(r"_[a-z]*_v_[1-9]", node.predicate):
+                    verb = node.predicate.split('_')[1]
+                    verb = verb + "-v"
+
+                    for entry in sml:
+                        if entry['verb'] == verb:
+                            print(True)
+                        else:
+                            print(verb)
+                            print(sml)
+            sml = semlink.get(key)
+            graph = graphs.get(key)
+
+            for node in graph.nodes:
+                # Check if predicate is verb, and if it is match it to SemLink verb.
+                if re.match(r"_[a-z]*_v_[1-9]", node.predicate):
+                    verb = node.predicate.split('_')[1]
+                    verb = verb + "-v"
+
+                    for entry in sml:
+                        if entry['verb'] == verb:
+                            print(True)
+                        else:
+                            print(False)
+                            print(verb)
+                            print(sml)
+
+
+    #_recover_v_1
+    item = graphs.popitem()
+    key = item[0]
+    graph = item[1]
+
+    print(graph.top)            # e7
+    print(graph.lnk)            #
+    print(graph.surface)        # None
+    print(graph.identifier)     # None
+    print("nodes \n")
+    for node in graph.nodes:
+        print(node.id)          # e7
+        print(node.predicate)   # focus_d
+        print(node.edges)       # {'ARG1': 'e5', 'ARG2': 'e6'}
+        print(node.properties)  # {'SF': 'prop', 'TENSE': 'untensed', 'MOOD': 'indicative', 'PROG': '-', 'PERF': '-'}
+        print(node.carg)        # None
+        print(node.lnk)         # <0:54>
+        print(node.surface)     # None
+        print(node.base)        # None
+
+    print(semlink.get(key))
+
     # Generate DeepLink outputs.
     # DB_SL_matcher(deepbank, semlink, wsj, False)
     # DB_PM_converter(deepbank)
+
+    print("Main Process Complete.")
