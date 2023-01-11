@@ -126,7 +126,7 @@ class deep_loader:
                     sentence["nodes"] = nodes
                     break
 
-                matcher = re.match(r"\[\d*\] \(\d of \d\) \{\d\} `(.*)'", line)
+                matcher = re.match(r"\[\d*\] \(\d* of \d*\) \{\d\} `(.*)'", line)
                 if matcher is not None:
                     sentence["src"] = matcher.groups()[0]
 

@@ -39,7 +39,17 @@ def create_eds_output(deepbank):
     text_file = open("../output.txt", "w")
     for key in deepbank.keys():
         entry = deepbank.get(key)
-        output = entry["filename"] + "\n" + entry["string"] + "\n\n"
+        output = entry["doc"] + entry["sent"] + "\n" + entry["string"] + "\n\n"
+        text_file.write(output)
+    text_file.close()
+
+
+def create_final_output(graphs):
+    text_file = open("../final.txt", "w")
+    for key in graphs.keys():
+        entry = graphs.get(key)
+        decoded = eds.encode(entry)
+        output = key + "\n" + decoded + "\n\n"
         text_file.write(output)
     text_file.close()
 
@@ -89,6 +99,53 @@ def process_sml():
     return semlink
 
 
+def annotate_eds(graphs):
+    for key in graphs.keys():
+
+        # Check if corresponding SemLink entry exists, if not skip.
+        if key in semlink.keys():
+            sml = semlink.get(key)
+            graph = graphs.get(key)
+
+            for node in graph.nodes:
+                # Check if predicate is verb, and if it is match it to SemLink verb.
+                if re.match(r"_[a-z]*_v_[1-9]", node.predicate):
+                    verb = node.predicate.split('_')[1]
+                    verb = verb + "-v"
+
+                    for fn_entry in sml:
+                        if fn_entry['verb'] == verb:
+                            # [a] Add frame to predicate. Currently adding IN and NF.
+                            if fn_entry["frame"] not in ["IN", "NF"]:
+                                node.predicate = node.predicate + "-fn." + fn_entry["frame"]
+
+                            # [b] Add argument labels to eds arguments. Currently adding all after (=).
+                            for argument in fn_entry["args"]:
+                                if 'rel' not in argument:
+                                    argument_number = ''
+                                    argument_label = ''
+                                    if '=' in argument:
+                                        split = argument.split('=')
+                                        argument_number = split[0].split('-')[1]
+                                        argument_label = split[1]
+                                    else:
+                                        split = argument.split('-')
+                                        # For e.g. 11:1-ARGM-PRD
+                                        if len(split) > 2:
+                                            argument_number = split[1]
+                                            argument_label = split[2]
+                                        # For e.g. 12:2-ARG0
+                                        else:
+                                            argument_number = split[1]
+                                            argument_label = ''
+
+                                    if argument_number in node.edges.keys():
+                                        node.edges[argument_number + "-fn." + argument_label] = node.edges[
+                                            argument_number]
+                                        del node.edges[argument_number]
+    return graphs
+
+
 # ------- MAIN -------
 if __name__ == "__main__":
     print("========================Start Basic Checking=========================")
@@ -117,7 +174,7 @@ if __name__ == "__main__":
 
     print("========================Start Main Process=========================")
     # Create output.txt file with all DB's EDS graphs.
-    # create_eds_output(deepbank)
+    create_eds_output(deepbank)
 
     print("[4] Converting DB to EDS graphs...")
     graphs = {}
@@ -129,70 +186,32 @@ if __name__ == "__main__":
         except eds.EDSSyntaxError:
             print("Error: EDS Parsing Syntax Error in sent." + entry["doc"] + entry["sent"])
 
-    print(graphs)
-
     print("[5] Looping to find verbs")
-    for key in graphs.keys():
-
-        # Check if corresponding SemLink entry exists, if not skip.
-        if key in semlink.keys():
-            sml = semlink.get(key)
-            graph = graphs.get(key)
-
-            for node in graph.nodes:
-                # Check if predicate is verb, and if it is match it to SemLink verb.
-                if re.match(r"_[a-z]*_v_[1-9]", node.predicate):
-                    verb = node.predicate.split('_')[1]
-                    verb = verb + "-v"
-
-                    for entry in sml:
-                        if entry['verb'] == verb:
-                            print(True)
-                        else:
-                            print(verb)
-                            print(sml)
-            sml = semlink.get(key)
-            graph = graphs.get(key)
-
-            for node in graph.nodes:
-                # Check if predicate is verb, and if it is match it to SemLink verb.
-                if re.match(r"_[a-z]*_v_[1-9]", node.predicate):
-                    verb = node.predicate.split('_')[1]
-                    verb = verb + "-v"
-
-                    for entry in sml:
-                        if entry['verb'] == verb:
-                            print(True)
-                        else:
-                            print(False)
-                            print(verb)
-                            print(sml)
-
-
-    #_recover_v_1
-    item = graphs.popitem()
-    key = item[0]
-    graph = item[1]
-
-    print(graph.top)            # e7
-    print(graph.lnk)            #
-    print(graph.surface)        # None
-    print(graph.identifier)     # None
-    print("nodes \n")
-    for node in graph.nodes:
-        print(node.id)          # e7
-        print(node.predicate)   # focus_d
-        print(node.edges)       # {'ARG1': 'e5', 'ARG2': 'e6'}
-        print(node.properties)  # {'SF': 'prop', 'TENSE': 'untensed', 'MOOD': 'indicative', 'PROG': '-', 'PERF': '-'}
-        print(node.carg)        # None
-        print(node.lnk)         # <0:54>
-        print(node.surface)     # None
-        print(node.base)        # None
-
-    print(semlink.get(key))
+    graphs = annotate_eds(graphs)
+    create_final_output(graphs)
+    print("Main Process Complete.")
 
     # Generate DeepLink outputs.
     # DB_SL_matcher(deepbank, semlink, wsj, False)
     # DB_PM_converter(deepbank)
 
-    print("Main Process Complete.")
+    # item = graphs.popitem()
+    # key = item[0]
+    # graph = item[1]
+    #
+    # print(graph.top)            # e7
+    # print(graph.lnk)            #
+    # print(graph.surface)        # None
+    # print(graph.identifier)     # None
+    # print("nodes \n")
+    # for node in graph.nodes:
+    #     print(node.id)          # e7
+    #     print(node.predicate)   # focus_d
+    #     print(node.edges)       # {'ARG1': 'e5', 'ARG2': 'e6'}
+    #     print(node.properties)  # {'SF': 'prop', 'TENSE': 'untensed', 'MOOD': 'indicative', 'PROG': '-', 'PERF': '-'}
+    #     print(node.carg)        # None
+    #     print(node.lnk)         # <0:54>
+    #     print(node.surface)     # None
+    #     print(node.base)        # None
+    #
+    # print(semlink.get(key))
