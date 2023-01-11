@@ -10,61 +10,70 @@ from task1.utils.Converter import DB_PM_converter
 from delphin.codecs import eds
 
 # (document_id) (sentence number) (token number) (standard) (verb-v) (VerbNet class)
-#  (Framenet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
-#  (ArgPointer)-ARGX=(VN Role);(FN Role/Optional Extra Fn Roles)
+#  (FrameNet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
+#  (ArgPointer)-ARG X=(VN Role);(FN Role/Optional Extra Fn Roles)
 sem_parser = ["doc", "sent", "token", "stand", "verb", "verbnet", "frame", "PB", "SI", "TAM", "args"]
 
 # nodes is a list of node, node is list of
-# [hanlde, class, startpoint(token ord), endpoint(token ord, not include), extra information] (all elements are strings)
+# [handle, class, startpoint(token ord), endpoint(token ord, not include), extra information] (all elements are strings)
 deepbank_parser = ["doc", "sent", "src", "nodes", "head"]
 
+
 def traverse_dir(path, operator):
-    sentenceSet = {}
+    sentence_set = {}
     parents = os.listdir(path)
     for parent in parents:
         child = os.path.join(path, parent)
         if os.path.isdir(child):
-            sentenceSet.update(traverse_dir(child, operator))
+            sentence_set.update(traverse_dir(child, operator))
         else:
-            sentenceSet.update(operator.load(child))
-    return sentenceSet
+            sentence_set.update(operator.load(child))
+    return sentence_set
 
-#  sem_parser=["doc","sent","token","stand","verb","verbnet","frame","PB","SI","TAM","args"]
-#  deepbank_parser=["doc","sent","src","nodes","head"]
 
-if __name__ == "__main__":
+def create_eds_output(deepbank):
+    text_file = open("../output.txt", "w")
+    for key in deepbank.keys():
+        entry = deepbank.get(key)
+        output = entry["filename"] + "\n" + entry["string"] + "\n\n"
+        text_file.write(output)
+    text_file.close()
 
-    print("File location using os.getcwd():", os.getcwd())
 
-    print("========================Start Basic Checking=========================")
+def process_ptb():
+    print("[1] Processing PennTreebank...")
 
     wsj = dict()
-    print("[1] Processing PennTreebank...")
     for i in range(25):
         if i < 10:
             string = "0" + str(i)
         else:
             string = str(i)
         wsj.update(traverse_dir("../data/wsj/" + string, ptb_loader))
+    return wsj
 
-    deep_loader.set_src(wsj)
+
+def process_db(loader):
+    print("[2] Processing DeepBank...")
 
     deepbank = dict()
-    print("[2] Processing DeepBank...")
     for j in range(22):
-
         if j < 10:
-            string = string = "0" + str(j)
+            string = "0" + str(j)
         else:
-            string = str(i)
+            string = str(j)
 
         for letter in ['a', 'b', 'c', 'd', 'e']:
             directory = "../data/deepbank/wsj" + string + letter
             if os.path.exists(directory):
                 deepbank.update(traverse_dir(directory, deep_loader))
+    return deepbank
+
+
+def process_sml():
+    print("[3] Processing SemLink...")
 
     semlink = dict()
-    print("[3] Processing SemLink...")
     for k in range(25):
         print("SemLink folder: " + str(k))
         if k < 10:
@@ -73,17 +82,47 @@ if __name__ == "__main__":
             string = str(k)
         semlink.update(traverse_dir("../data/semlink/" + string, sem_loader))
 
-    text_file = open("../output.txt", "w")
-    for key in deepbank.keys():
-        string = deepbank.get(key)["string"]
-        # graph = eds.loads(string)[0]
-        text_file.write(string)
+    return semlink
 
-    text_file.close()
+
+if __name__ == "__main__":
+    print("========================Start Basic Checking=========================")
+
+    # Check current path.
+    # print("File location using os.getcwd():", os.getcwd())
+
+    # [1] Process Penn Treebank.
+    wsj = process_ptb()
+
+    # Initialise DeepBank loader.
+    deep_loader.set_src(wsj)
+
+    # [2] Process DeepBank.
+    deepbank = process_db(deep_loader)
+
+    # [3] Process SemLink.
+    semlink = process_sml()
 
     print("Basic Checking Complete.")
     print("SemLink size: {}, Deepbank size: {}".format(len(semlink), len(deepbank)))
+    print('{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.'.format(sem_loader.framemiss,
+                                                                                          sem_loader.total_verb,
+                                                                                          sem_loader.framemiss_sentence))
 
-    print("{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.".format(sem_loader.framemiss, sem_loader.total_verb, sem_loader.framemiss_sentence))
+    # Create output.txt file with all DB's EDS graphs.
+    # create_eds_output(deepbank)
+
+    graphs = {}
+    for key in deepbank.keys():
+        entry = deepbank.get(key)
+
+        try:
+            graphs[entry["doc"] + entry["sent"]] = eds.loads(entry["string"])[0]
+        except eds.EDSSyntaxError:
+            print("Error: EDS Parsing Syntax Error in sent." + entry["doc"] + entry["sent"])
+
+    print(graphs)
+
+    # Generate DeepLink outputs.
     # DB_SL_matcher(deepbank, semlink, wsj, False)
     # DB_PM_converter(deepbank)

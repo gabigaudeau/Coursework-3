@@ -116,6 +116,7 @@ class deep_loader:
             sentence = {}
             nodes = []
             string = ""
+            sentence["filename"] = path
             flag = False
             for line in pf:
                 line = line.decode('utf-8')
