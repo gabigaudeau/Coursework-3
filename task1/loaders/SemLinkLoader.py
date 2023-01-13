@@ -4,7 +4,7 @@
 #  (FrameNet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
 #  (ArgPointer)-ARG X=(VN Role);(FN Role/Optional Extra Fn Roles)
 import re
-from task1.loaders.AddZeros import addZeros
+from task1.loaders.AddZeros import add_zeros
 sem_parser = ["doc", "sent", "token", "stand", "verb", "verbnet", "frame", "PB", "SI", "TAM", "args"]
 
 
@@ -20,6 +20,7 @@ class SemLinkLoader:
             doc = re.search(r"\_(.*)\.", path).groups()[0]
             sent = "-1"
             verbs = None
+            miss = None
             for line in file:
                 SemLinkLoader.total_verb += 1
                 args = line.strip().split(" ")
@@ -40,13 +41,15 @@ class SemLinkLoader:
                 if sent != sentence["sent"]:
                     if miss:
                         SemLinkLoader.missing_frame_sentences += 1
-                    sentence_set[doc + addZeros(sent)] = verbs
+                    sentence_set[doc + add_zeros(sent)] = verbs
                     sent = sentence["sent"]
-                    verbs = [sentence]
+                    verbs.append(sentence)
                     miss = False
                 else:
                     verbs.append(sentence)
 
-            sentence_set[doc + addZeros(sent)] = verbs
+            sentence_set[doc + add_zeros(sent)] = verbs
             if miss:
                 SemLinkLoader.missing_frame_sentences += 1
+
+        return sentence_set

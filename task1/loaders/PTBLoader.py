@@ -1,11 +1,11 @@
 # This Procedure is used for extracting tokens from ptb file (PTB3 style)
 
 from task1.loaders.SpecialCases import special_transform
-from task1.loaders.AddZeros import addZeros
+from task1.loaders.AddZeros import add_zeros
 from task1.utils.TreeUtils import Node
 import re
 
-class ptb_loader:
+class PTBLoader:
     token_pattern = re.compile(r"[ \(]]")
 
     def load(path):
@@ -18,8 +18,8 @@ class ptb_loader:
         for line in ptb:
             if line[0] == "(":
                 if index != -1:
-                    sentence_set[doc + addZeros(index)] = sent
-                    sentence_set["t" + doc + addZeros(index)] = tsent
+                    sentence_set[doc + add_zeros(index)] = sent
+                    sentence_set["t" + doc + add_zeros(index)] = tsent
                 sent = []
                 tsent = []
                 index += 1
@@ -46,7 +46,7 @@ class ptb_loader:
                     next = line.find(")", loc + 1)
                     token = line[loc:next]
                     stack[-1].setToken(token)
-                    stack[-1].setOrd(ord) # Set order number
+                    stack[-1].setOrd(ord)  # Set order number
                     ord += 1
                     loc = next
 
@@ -56,6 +56,6 @@ class ptb_loader:
                     sent.append([pos, token])
                     tsent.append(stack[-1])
 
-        sentence_set[doc + addZeros(index)] = sent
-        sentence_set["t" + doc + addZeros(index)] = tsent
+        sentence_set[doc + add_zeros(index)] = sent
+        sentence_set["t" + doc + add_zeros(index)] = tsent
         return sentence_set

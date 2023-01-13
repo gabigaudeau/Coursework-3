@@ -30,6 +30,7 @@ class Node:
     def addSucc(self,endpoint):
         self.succ.append(list(endpoint))
 
+
 def isCon(head, checklist):
     if head in checklist:
         checklist.remove(head)
@@ -44,6 +45,7 @@ def isCon(head, checklist):
         if isCon(edge[1],checklist):
             return True
     return False
+
 
 # "flagon" is a switch for Connectivity Checking
 # "start_list" is used for map start-position to nodes

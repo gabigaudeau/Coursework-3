@@ -2,16 +2,13 @@ import os
 import os.path
 import re
 
-from task1.loaders.DeepLoader import DeepLoader
-from task1.loaders.SemLoader import SemLoader
-from task1.loaders.PTBLoader import ptb_loader
+from task1.loaders.DeepBankLoader import DeepBankLoader
+from task1.loaders.SemLinkLoader import SemLinkLoader
+from task1.loaders.PTBLoader import PTBLoader
 from task1.utils.EDSUtils import convert_to_eds, annotate_eds
 from task1.utils.GraphUtils import visualise_graph
 from delphin.codecs import eds
-from task1.loaders.PMLoader import PMLoader as pm
-from task1.loaders.ONCompleter import on_completer
-from task1.utils.Matcher import DB_SL_matcher
-from task1.utils.Converter import DB_PM_converter
+
 
 # ------- FIELDS -------
 # (document_id) (sentence number) (token number) (standard) (verb-v) (VerbNet class)
@@ -65,7 +62,7 @@ def process_ptb():
             string = "0" + str(i)
         else:
             string = str(i)
-        wsj.update(traverse_dir("../data/wsj/" + string, ptb_loader))
+        wsj.update(traverse_dir("../data/wsj/" + string, PTBLoader))
     return wsj
 
 
@@ -96,7 +93,7 @@ def process_sml():
             string = "0" + str(k)
         else:
             string = str(k)
-        semlink.update(traverse_dir("../data/semlink/" + string, SemLoader))
+        semlink.update(traverse_dir("../data/semlink/" + string, SemLinkLoader))
 
     return semlink
 
@@ -112,19 +109,19 @@ if __name__ == "__main__":
     wsj = process_ptb()
 
     # Initialise DeepBank loader.
-    DeepLoader.set_src(wsj)
+    DeepBankLoader.set_src(wsj)
 
     # [2] Process DeepBank.
-    deepbank = process_db(DeepLoader)
+    deepbank = process_db(DeepBankLoader)
 
     # [3] Process SemLink.
     semlink = process_sml()
 
     print("Basic Checking Complete.")
     print("SemLink size: {}, Deepbank size: {}".format(len(semlink), len(deepbank)))
-    print('{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.'.format(SemLoader.missing_frames,
-                                                                                          SemLoader.total_verb,
-                                                                                          SemLoader.missing_frame_sentences)
+    print('{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.'.format(SemLinkLoader.missing_frames,
+                                                                                          SemLinkLoader.total_verb,
+                                                                                          SemLinkLoader.missing_frame_sentences)
           )
 
     print("========================Start Main Process=========================")
@@ -149,10 +146,6 @@ if __name__ == "__main__":
     # for key in complete:
     #     print(semlink[key])
     #     print(deepbank[key]['src'])
-
-    # Generate DeepLink outputs.
-    # DB_SL_matcher(deepbank, semlink, wsj, False)
-    # DB_PM_converter(deepbank)
 
     # item = graphs.popitem()
     # key = item[0]

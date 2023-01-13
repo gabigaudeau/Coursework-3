@@ -6,18 +6,18 @@ import re
 import gzip
 
 
-class DeepLoader:
+class DeepBankLoader:
     punctuation_list = [",", ".", "\"", "'", ":", "-", "$", "{", "}", ")", "(", "-NONE-"]
 
     def set_src(src):
-        DeepLoader.wsj = src
+        DeepBankLoader.wsj = src
 
     # Convert token location tags in deepbank resource to semlink
     # Return True when success, else False
     def convert(sentence):
         starts = {}
-        if (sentence["doc"] + sentence["sent"]) in DeepLoader.wsj.keys():
-            wsj = DeepLoader.wsj[sentence["doc"] + sentence["sent"]]
+        if (sentence["doc"] + sentence["sent"]) in DeepBankLoader.wsj.keys():
+            wsj = DeepBankLoader.wsj[sentence["doc"] + sentence["sent"]]
             ends = {}
             ender = 0
             src = sentence['src']
@@ -52,10 +52,10 @@ class DeepLoader:
                     node[2] = starts[node[2]]
                     node[3] = ends[node[3]]
 
-                    while wsj[node[3]][0] in DeepLoader.punctuation_list and node[2] < node[3]:
+                    while wsj[node[3]][0] in DeepBankLoader.punctuation_list and node[2] < node[3]:
                         node[3] -= 1
 
-                    while wsj[node[2]][0] in DeepLoader.punctuation_list and node[2] < node[3]:
+                    while wsj[node[2]][0] in DeepBankLoader.punctuation_list and node[2] < node[3]:
                         node[2] += 1
 
                     node[3] += 1  # End Pos should add one for sliding
@@ -110,6 +110,6 @@ class DeepLoader:
             sentence["doc"] = matcher[0]
             sentence["sent"] = matcher[1]
 
-            if DeepLoader.convert(sentence):
+            if DeepBankLoader.convert(sentence):
                 sentence_set[matcher[0] + matcher[1]] = sentence
         return sentence_set

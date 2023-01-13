@@ -1,6 +1,5 @@
-# Deal with speical cases in PTB (WSJ) file
+# Deal with special cases in PTB (WSJ) file
 # Transport label to real token
-
 def special_transform(spt0, spt1):
     if spt1 == "``" or spt1 == "''":
         spt0 = spt1 = "\""
