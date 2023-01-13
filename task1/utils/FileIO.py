@@ -6,6 +6,7 @@ from task1.loaders.DeepLoader import DeepLoader
 from task1.loaders.SemLoader import SemLoader
 from task1.loaders.PTBLoader import ptb_loader
 from task1.utils.EDSUtils import convert_to_eds, annotate_eds
+from task1.utils.GraphUtils import visualise_graph
 from delphin.codecs import eds
 from task1.loaders.PMLoader import PMLoader as pm
 from task1.loaders.ONCompleter import on_completer
@@ -137,13 +138,17 @@ if __name__ == "__main__":
     graphs, complete, incomplete = annotate_eds(graphs, semlink)
     print("Number of EDS graphs that are complete: {}, incomplete: {}".format(len(complete), len(incomplete)))
     create_final_output(graphs)
+
+    print("[6] Generate visual for a single EDS graph...")
+    graph = graphs['0024006']
+    visualise_graph(graph)
+
     print("Main Process Complete.")
     print("========================End Main Process=========================")
 
-    for key in incomplete:
-        print(semlink[key])
-
-
+    # for key in complete:
+    #     print(semlink[key])
+    #     print(deepbank[key]['src'])
 
     # Generate DeepLink outputs.
     # DB_SL_matcher(deepbank, semlink, wsj, False)

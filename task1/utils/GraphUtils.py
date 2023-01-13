@@ -94,7 +94,7 @@ def deep_grapher(nodes_text, h, flagon=False, require_verb=False):
         return head, nodes, start_list
 
 def graph_painter(filename,raw, nodes,edges):
-    outputdir = '/Users/gabriellegaudeau/Documents/Cambridge/\"L98 - Introduction to Computational Semantics\"/Coursework 3/Visuals'
+    outputdir = '../'
     dot=Digraph(comment=raw,format="png")
 
     filename = outputdir + filename
@@ -106,3 +106,17 @@ def graph_painter(filename,raw, nodes,edges):
         dot.edge(edge[1], edge[2], edge[0])
 
     dot.render(filename + ".gv")
+
+
+def visualise_graph(graph):
+    output = Digraph(format='svg')
+    node_name = {}
+    i = 0
+    while i < len(graph.nodes):
+        node_name[graph.nodes[i].id] = graph.nodes[i].predicate
+        i += 1
+
+    for tail, arc, head in graph.edges:
+        output.edge(tail_name=node_name[tail], head_name=node_name[head], label=arc)
+
+    output.render('../single_eds_graph')
