@@ -180,13 +180,18 @@ if __name__ == "__main__":
     graphs = {}
     for key in deepbank.keys():
         entry = deepbank.get(key)
-
         try:
             graphs[entry["doc"] + entry["sent"]] = eds.loads(entry["string"])[0]
         except eds.EDSSyntaxError:
-            print("Error: EDS Parsing Syntax Error in sent." + entry["doc"] + entry["sent"])
+            # Deal with numbers with commas, for e.g. 238,000.
+            for match in re.findall(r"_[1-9]*,[1-9]*", entry["string"]):
+                entry["string"] = entry["string"].replace(match, re.sub(',', '', match))
+                try:
+                    graphs[entry["doc"] + entry["sent"]] = eds.loads(entry["string"])[0]
+                except eds.EDSSyntaxError:
+                    print("Error: EDS Parsing Syntax Error in sent." + entry["doc"] + entry["sent"])
 
-    print("[5] Looping to find verbs")
+    print("[5] Annotate EDS graphs...")
     graphs = annotate_eds(graphs)
     create_final_output(graphs)
     print("Main Process Complete.")
