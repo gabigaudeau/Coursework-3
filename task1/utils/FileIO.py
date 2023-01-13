@@ -139,7 +139,8 @@ def annotate_eds(graphs):
                                             argument_number = split[1]
                                             argument_label = ''
 
-                                    if argument_number in node.edges.keys():
+                                    # Check that the argument is in the EDS graph and that the label is nonempty.
+                                    if argument_number in node.edges.keys() and argument_label != "":
                                         node.edges[argument_number + "-fn." + argument_label] = node.edges[
                                             argument_number]
                                         del node.edges[argument_number]
