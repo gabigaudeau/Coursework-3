@@ -93,20 +93,6 @@ def deep_grapher(nodes_text, h, flagon=False, require_verb=False):
     else:
         return head, nodes, start_list
 
-def graph_painter(filename,raw, nodes,edges):
-    outputdir = '../'
-    dot=Digraph(comment=raw,format="png")
-
-    filename = outputdir + filename
-    for node in nodes:
-        id = node[0]
-        name = node[1]
-        dot.node(id, name)
-    for edge in edges:
-        dot.edge(edge[1], edge[2], edge[0])
-
-    dot.render(filename + ".gv")
-
 
 def visualise_graph(graph):
     output = Digraph(format='svg')
