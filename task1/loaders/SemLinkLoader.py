@@ -3,8 +3,10 @@
 # (document_id) (sentence number) (token number) (standard) (verb-v) (VerbNet class)
 # (FrameNet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
 # (ArgPointer)-ARG X=(VN Role);(FN Role/Optional Extra Fn Roles)
+
 import re
 from task1.loaders.AddZeros import add_zeros
+
 sem_parser = ["doc", "sent", "token", "stand", "verb", "verbnet", "frame", "PB", "SI", "TAM", "args"]
 
 

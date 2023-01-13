@@ -1,6 +1,5 @@
 import os
 import os.path
-import re
 
 from task1.loaders.DeepBankLoader import DeepBankLoader
 from task1.loaders.SemLinkLoader import SemLinkLoader

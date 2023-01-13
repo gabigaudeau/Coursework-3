@@ -5,6 +5,7 @@ from task1.loaders.AddZeros import add_zeros
 from task1.utils.TreeUtils import Node
 import re
 
+
 class PTBLoader:
     token_pattern = re.compile(r"[ \(]]")
 
