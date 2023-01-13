@@ -2,8 +2,8 @@ import os
 import os.path
 import re
 
-from task1.loaders.DeepLoader import deep_loader
-from task1.loaders.SemLoader import sem_loader
+from task1.loaders.DeepLoader import DeepLoader
+from task1.loaders.SemLoader import SemLoader
 from task1.loaders.PTBLoader import ptb_loader
 from task1.utils.EDSUtils import convert_to_eds, annotate_eds
 from delphin.codecs import eds
@@ -95,7 +95,7 @@ def process_sml():
             string = "0" + str(k)
         else:
             string = str(k)
-        semlink.update(traverse_dir("../data/semlink/" + string, sem_loader))
+        semlink.update(traverse_dir("../data/semlink/" + string, SemLoader))
 
     return semlink
 
@@ -111,19 +111,19 @@ if __name__ == "__main__":
     wsj = process_ptb()
 
     # Initialise DeepBank loader.
-    deep_loader.set_src(wsj)
+    DeepLoader.set_src(wsj)
 
     # [2] Process DeepBank.
-    deepbank = process_db(deep_loader)
+    deepbank = process_db(DeepLoader)
 
     # [3] Process SemLink.
     semlink = process_sml()
 
     print("Basic Checking Complete.")
     print("SemLink size: {}, Deepbank size: {}".format(len(semlink), len(deepbank)))
-    print('{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.'.format(sem_loader.framemiss,
-                                                                                          sem_loader.total_verb,
-                                                                                          sem_loader.framemiss_sentence)
+    print('{} of {} verbs in all Semlink lacked FN link, in {} sentences totally.'.format(SemLoader.missing_frames,
+                                                                                          SemLoader.total_verb,
+                                                                                          SemLoader.missing_frame_sentences)
           )
 
     print("========================Start Main Process=========================")
@@ -142,6 +142,8 @@ if __name__ == "__main__":
 
     for key in incomplete:
         print(semlink[key])
+
+
 
     # Generate DeepLink outputs.
     # DB_SL_matcher(deepbank, semlink, wsj, False)

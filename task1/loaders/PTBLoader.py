@@ -1,4 +1,4 @@
-# This Procedure is used for extracting tokens from ptb file (PTB3 style or ON5.0 style)
+# This Procedure is used for extracting tokens from ptb file (PTB3 style)
 
 from task1.loaders.SpecialCases import special_transform
 from task1.loaders.AddZeros import addZeros

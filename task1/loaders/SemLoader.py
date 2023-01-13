@@ -1,16 +1,17 @@
 # This Procedure is used for extracting tokens from semlink file (semlink 1.2.2 style)
 # The file format is like this:
 # (document_id) (sentence number) (token number) (standard) (verb-v) (VerbNet class)
-#  (Framenet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
-#  (ArgPointer)-ARGX=(VN Role);(FN Role/Optional Extra Fn Roles)
+#  (FrameNet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
+#  (ArgPointer)-ARG X=(VN Role);(FN Role/Optional Extra Fn Roles)
 import re
 from task1.loaders.AddZeros import addZeros
 sem_parser = ["doc", "sent", "token", "stand", "verb", "verbnet", "frame", "PB", "SI", "TAM", "args"]
 
-class sem_loader:
-    framemiss = 0
+
+class SemLoader:
+    missing_frames = 0
     total_verb = 0
-    framemiss_sentence = 0
+    missing_frame_sentences = 0
     token_pattern = re.compile(r"\([^()]*\)")
 
     def load(path):
@@ -21,10 +22,9 @@ class sem_loader:
             verbs = None
             miss = None
             for line in file:
-                sem_loader.total_verb += 1
+                SemLoader.total_verb += 1
                 args = line.strip().split(" ")
-                sentence = {}
-                sentence["doc"] = doc
+                sentence = {"doc": doc}
                 for index in range(10):
                     sentence[sem_parser[index]] = args[index]
                 args = args[10:]
@@ -35,15 +35,14 @@ class sem_loader:
                     miss = False
 
                 if sentence["frame"] in ["IN", "NF"]:
-                    sem_loader.framemiss += 1
+                    SemLoader.missing_frames += 1
                     miss = True
 
                 if sent != sentence["sent"]:
                     if miss:
-                        sem_loader.framemiss_sentence += 1
+                        SemLoader.missing_frame_sentences += 1
                     sentence_set[doc + addZeros(sent)] = verbs
                     sent = sentence["sent"]
-                    verbs = []
                     verbs.append(sentence)
                     miss = False
                 else:
@@ -51,6 +50,6 @@ class sem_loader:
 
             sentence_set[doc + addZeros(sent)] = verbs
             if miss:
-                sem_loader.framemiss_sentence += 1
+                SemLoader.missing_frame_sentences += 1
 
         return sentence_set
