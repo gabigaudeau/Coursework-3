@@ -45,6 +45,7 @@ def annotate_eds(graphs, semlink):
                                 is_incomplete = True
 
                             # [b] Add argument labels to eds arguments. Currently adding all after (=).
+                            # TODO. Extract argument number and add +1 to match EDS graph
                             for argument in fn_entry["args"]:
                                 if 'rel' not in argument:
                                     argument_number = ''
@@ -66,6 +67,7 @@ def annotate_eds(graphs, semlink):
 
                                     # Check that the argument is in the EDS graph and that the label is nonempty.
                                     # TODO. Is an FN incomplete if the arguments are empty?
+                                    # TODO. Potentially look at lnk/variable before enriching.
                                     if argument_number in node.edges.keys():
                                         if argument_label != "":
                                             node.edges[argument_number + "-fn." + argument_label] = node.edges[

@@ -4,8 +4,8 @@ import os.path
 from task1.loaders.DeepBankLoader import DeepBankLoader
 from task1.loaders.SemLinkLoader import SemLinkLoader
 from task1.loaders.PTBLoader import PTBLoader
-from task1.utils.EDSUtils import convert_to_eds, annotate_eds
-from task1.utils.GraphUtils import visualise_graph
+from task1.scripts.EDSUtils import convert_to_eds, annotate_eds
+from task1.scripts.GraphUtils import eds_to_dgl_graph, visualise_graph
 from delphin.codecs import eds
 
 
@@ -128,16 +128,23 @@ if __name__ == "__main__":
     create_eds_output(deepbank)
 
     print("[4] Converting DB to EDS graphs...")
-    graphs = convert_to_eds(deepbank)
+    eds_graphs = convert_to_eds(deepbank)
 
-    print("[5] Annotate EDS graphs...")
-    graphs, complete, incomplete = annotate_eds(graphs, semlink)
+    print("[5] Annotate EDS graphs with SemLink data...")
+    eds_graphs, complete, incomplete = annotate_eds(eds_graphs, semlink)
     print("Number of EDS graphs that are complete: {}, incomplete: {}".format(len(complete), len(incomplete)))
-    create_final_output(graphs)
+    create_final_output(eds_graphs)
 
-    print("[6] Generate visual for a single EDS graph...")
-    graph = graphs['0024006']
-    visualise_graph(graph)
+    print("[6] Convert complete EDS graphs to DGL graphs...")
+    # eds_to_dgl_graph(eds_graphs['0024006'])
+
+    dgl_graphs = {}
+    for key in complete:
+        dgl_graphs[key] = eds_to_dgl_graph(eds_graphs[key])
+
+    # print("[6] Generate visual for a single EDS graph...")
+    # graph = graphs['0024006']
+    # visualise_graph(graph)
 
     print("Main Process Complete.")
     print("========================End Main Process=========================")

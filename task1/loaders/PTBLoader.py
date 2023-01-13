@@ -2,7 +2,7 @@
 
 from task1.loaders.SpecialCases import special_transform
 from task1.loaders.AddZeros import add_zeros
-from task1.utils.TreeUtils import Node
+from task1.scripts.TreeUtils import Node
 import re
 
 
