@@ -5,6 +5,7 @@ import re
 from task1.loaders.DeepLoader import deep_loader
 from task1.loaders.SemLoader import sem_loader
 from task1.loaders.PTBLoader import ptb_loader
+from task1.utils.EDSUtils import convert_to_eds, annotate_eds
 from delphin.codecs import eds
 from task1.loaders.PMLoader import PMLoader as pm
 from task1.loaders.ONCompleter import on_completer
@@ -36,7 +37,7 @@ def traverse_dir(path, operator):
 
 
 def create_eds_output(deepbank):
-    text_file = open("../output.txt", "w")
+    text_file = open("../deepbank_eds.txt", "w")
     for key in deepbank.keys():
         entry = deepbank.get(key)
         output = entry["doc"] + entry["sent"] + "\n" + entry["string"] + "\n\n"
@@ -45,7 +46,7 @@ def create_eds_output(deepbank):
 
 
 def create_final_output(graphs):
-    text_file = open("../final.txt", "w")
+    text_file = open("../final_eds.txt", "w")
     for key in graphs.keys():
         entry = graphs.get(key)
         decoded = eds.encode(entry)
@@ -99,54 +100,6 @@ def process_sml():
     return semlink
 
 
-def annotate_eds(graphs):
-    for key in graphs.keys():
-
-        # Check if corresponding SemLink entry exists, if not skip.
-        if key in semlink.keys():
-            sml = semlink.get(key)
-            graph = graphs.get(key)
-
-            for node in graph.nodes:
-                # Check if predicate is verb, and if it is match it to SemLink verb.
-                if re.match(r"_[a-z]*_v_[1-9]", node.predicate):
-                    verb = node.predicate.split('_')[1]
-                    verb = verb + "-v"
-
-                    for fn_entry in sml:
-                        if fn_entry['verb'] == verb:
-                            # [a] Add frame to predicate. Currently adding IN and NF.
-                            if fn_entry["frame"] not in ["IN", "NF"]:
-                                node.predicate = node.predicate + "-fn." + fn_entry["frame"]
-
-                            # [b] Add argument labels to eds arguments. Currently adding all after (=).
-                            for argument in fn_entry["args"]:
-                                if 'rel' not in argument:
-                                    argument_number = ''
-                                    argument_label = ''
-                                    if '=' in argument:
-                                        split = argument.split('=')
-                                        argument_number = split[0].split('-')[1]
-                                        argument_label = split[1]
-                                    else:
-                                        split = argument.split('-')
-                                        # For e.g. 11:1-ARGM-PRD
-                                        if len(split) > 2:
-                                            argument_number = split[1]
-                                            argument_label = split[2]
-                                        # For e.g. 12:2-ARG0
-                                        else:
-                                            argument_number = split[1]
-                                            argument_label = ''
-
-                                    # Check that the argument is in the EDS graph and that the label is nonempty.
-                                    if argument_number in node.edges.keys() and argument_label != "":
-                                        node.edges[argument_number + "-fn." + argument_label] = node.edges[
-                                            argument_number]
-                                        del node.edges[argument_number]
-    return graphs
-
-
 # ------- MAIN -------
 if __name__ == "__main__":
     print("========================Start Basic Checking=========================")
@@ -174,28 +127,21 @@ if __name__ == "__main__":
           )
 
     print("========================Start Main Process=========================")
-    # Create output.txt file with all DB's EDS graphs.
+    # Create deepbank_eds.txt file with all DB's EDS graphs.
     create_eds_output(deepbank)
 
     print("[4] Converting DB to EDS graphs...")
-    graphs = {}
-    for key in deepbank.keys():
-        entry = deepbank.get(key)
-        try:
-            graphs[entry["doc"] + entry["sent"]] = eds.loads(entry["string"])[0]
-        except eds.EDSSyntaxError:
-            # Deal with numbers with commas, for e.g. 238,000.
-            for match in re.findall(r"_[1-9]*,[1-9]*", entry["string"]):
-                entry["string"] = entry["string"].replace(match, re.sub(',', '', match))
-                try:
-                    graphs[entry["doc"] + entry["sent"]] = eds.loads(entry["string"])[0]
-                except eds.EDSSyntaxError:
-                    print("Error: EDS Parsing Syntax Error in sent." + entry["doc"] + entry["sent"])
+    graphs = convert_to_eds(deepbank)
 
     print("[5] Annotate EDS graphs...")
-    graphs = annotate_eds(graphs)
+    graphs, complete, incomplete = annotate_eds(graphs, semlink)
+    print("Number of EDS graphs that are complete: {}, incomplete: {}".format(len(complete), len(incomplete)))
     create_final_output(graphs)
     print("Main Process Complete.")
+    print("========================End Main Process=========================")
+
+    for key in incomplete:
+        print(semlink[key])
 
     # Generate DeepLink outputs.
     # DB_SL_matcher(deepbank, semlink, wsj, False)
@@ -220,4 +166,3 @@ if __name__ == "__main__":
     #     print(node.surface)     # None
     #     print(node.base)        # None
     #
-    # print(semlink.get(key))
