@@ -1,11 +1,17 @@
-# This Procedure is used for extracting tokens from Deepbank file (deepbank1.1 style)
-# It automatically convert deepbank-style word position labels (based on characters)
-# to PTB-style, which is based on extended tokens (including some -NONE- token)
+# ------- DESCRIPTION -------
+# Loader used for extracting tokens from Deepbank file (deepbank1.1 style).
+# Automatically convert deepbank-style word position labels (based on characters) to Penn TreeBank-style.
+# Penn Treebank is based on extended tokens (and includes some -NONE- token).
+# Imported in FileIO.
+# Source: https://github.com/wehos/DeepLink
 
+
+# ------- IMPORTS -----------
 import re
 import gzip
 
 
+# ------- CLASS  ------------
 class DeepBankLoader:
     punctuation_list = [",", ".", "\"", "'", ":", "-", "$", "{", "}", ")", "(", "-NONE-"]
 

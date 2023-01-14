@@ -1,15 +1,23 @@
-# This Procedure is used for extracting tokens from semlink file (semlink 1.2.2 style)
-# The file format is like this:
+# ------- DESCRIPTION -------
+# Loader used for extracting tokens from SemLink files (semlink 1.2.2 style).
+# The file format is as follows:
 # (document_id) (sentence number) (token number) (standard) (verb-v) (VerbNet class)
 # (FrameNet Frame) (PB grouping) (SI grouping) (tense/aspect/mood info)
 # (ArgPointer)-ARG X=(VN Role);(FN Role/Optional Extra Fn Roles)
+# Imported in FileIO.
+# Source: https://github.com/wehos/DeepLink
 
+
+# ------- IMPORTS -----------
 import re
 from task1.loaders.AddZeros import add_zeros
 
+
+# ------- FIELD  ------------
 sem_parser = ["doc", "sent", "token", "stand", "verb", "verbnet", "frame", "PB", "SI", "TAM", "args"]
 
 
+# ------- CLASS  ------------
 class SemLinkLoader:
     missing_frames = 0
     total_verb = 0

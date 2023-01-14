@@ -1,11 +1,17 @@
-# This Procedure is used for extracting tokens from ptb file (PTB3 style)
+# ------- DESCRIPTION -------
+# Loader used for extracting tokens from Penn TreeBank files (PTB3 style).
+# Imported in FileIO.
+# Source: https://github.com/wehos/DeepLink
 
+
+# ------- IMPORTS -----------
 from task1.loaders.SpecialCases import special_transform
 from task1.loaders.AddZeros import add_zeros
-from task1.scripts.TreeUtils import Node
+from task1.utils.TreeUtils import Node
 import re
 
 
+# ------- CLASS  ------------
 class PTBLoader:
     token_pattern = re.compile(r"[ \(]]")
 
@@ -38,16 +44,16 @@ class PTBLoader:
                 elif line[loc] == ")":
                     last = stack.pop()
                     if len(stack) > 0:
-                        stack[-1].setChild(last)
-                        last.setFather(stack[-1])
+                        stack[-1].set_child(last)
+                        last.set_father(stack[-1])
                     loc += 1
                 elif line[loc] == " ":
                     loc += 1
                 else:
                     next = line.find(")", loc + 1)
                     token = line[loc:next]
-                    stack[-1].setToken(token)
-                    stack[-1].setOrd(ord)  # Set order number
+                    stack[-1].set_token(token)
+                    stack[-1].set_ord(ord)  # Set order number
                     ord += 1
                     loc = next
 

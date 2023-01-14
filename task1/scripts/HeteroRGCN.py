@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import dgl.nn as dglnn
-from task1.scripts.HeteroRGCNLayer import HeteroRGCNLayer
 
 
 class HeteroRGCN(nn.Module):

@@ -1,7 +1,38 @@
+# ------- DESCRIPTION -------
+# Util for annotated EDS graphs.
+# Imported in FileIO.
+
+
+# ------- IMPORTS -----------
 import re
 from delphin.codecs import eds
 
 
+# for key in complete:
+#     print(semlink[key])
+#     print(deepbank[key]['src'])
+
+# item = graphs.popitem()
+# key = item[0]
+# graph = item[1]
+#
+# print(graph.top)            # e7
+# print(graph.lnk)            #
+# print(graph.surface)        # None
+# print(graph.identifier)     # None
+# print("nodes \n")
+# for node in graph.nodes:
+#     print(node.id)          # e7
+#     print(node.predicate)   # focus_d
+#     print(node.edges)       # {'ARG1': 'e5', 'ARG2': 'e6'}
+#     print(node.properties)  # {'SF': 'prop', 'TENSE': 'untensed', 'MOOD': 'indicative', 'PROG': '-', 'PERF': '-'}
+#     print(node.carg)        # None
+#     print(node.lnk)         # <0:54>
+#     print(node.surface)     # None
+#     print(node.base)        # None
+#
+
+# ------- METHODS -----------
 def convert_to_eds(deepbank):
     graphs = {}
     for key in deepbank.keys():

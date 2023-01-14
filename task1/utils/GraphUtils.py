@@ -1,27 +1,22 @@
-# This module creates graph from deepbank EDS.
-from graphviz import Digraph
+# ------- DESCRIPTION -------
+# Util for pydelphin EDS graphs.
+# Imported in FileIO.
+
+
+# ------- IMPORTS -----------
 import dgl
 import torch
 import numpy as np
+from graphviz import Digraph
 
 
-# print(graph.top)            # e7
-# print(graph.lnk)            #
-# print(graph.surface)        # None
-# print(graph.identifier)     # None
-# print(node.id)              # e7
-# print(node.predicate)       # focus_d
-# print(node.edges)           # {'ARG1': 'e5', 'ARG2': 'e6'}
-# print(node.properties)      # {'SF': 'prop', 'TENSE': 'untensed', 'MOOD': 'indicative', 'PROG': '-', 'PERF': '-'}
-# print(node.carg)            # None
-# print(node.lnk)             # <0:54>
-# print(node.surface)         # None
-# print(node.base)            # None
-
-
+# ------- METHODS -----------
+# Method for converting a pydelphin EDS graph to a DGL heterogeneous graph.
+# Input: delphin.eds graph
+# Output: dgl.heterograph
 def eds_to_dgl_graph(eds):
-    ids_to_predicate = {}
-    predicate_to_counter = {}
+    ids_to_predicate = {}       # Dictionary with (key: variable id, value: variable predicate).
+    predicate_to_counter = {}   # Dictionary with (key: variable predicate, value: number of nodes with predicate type).
     for node in eds.nodes:
         ids_to_predicate[node.id] = node.predicate
         if node.predicate not in predicate_to_counter.keys():
@@ -38,7 +33,6 @@ def eds_to_dgl_graph(eds):
             predicate_to_counter[node.predicate] -= 1
 
     data_dict = {}
-
     for node in eds.nodes:
         # Each value of the dictionary is a list of edge tuples.
         # Nodes are integer IDs starting from zero.
@@ -55,14 +49,16 @@ def eds_to_dgl_graph(eds):
     return dgl.heterograph(data_dict, idtype=torch.int32, num_nodes_dict=num_nodes_dict)
 
 
+# Method for generating '.svg' visualisation of a pydelphin EDS graph.
+# Input: delphin.eds graph
 def visualise_graph(eds):
-    output = Digraph(format='svg')
     node_name = {}
     i = 0
     while i < len(eds.nodes):
         node_name[eds.nodes[i].id] = eds.nodes[i].predicate
         i += 1
 
+    output = Digraph(format='svg')
     for tail, arc, head in eds.edges:
         output.edge(tail_name=node_name[tail], head_name=node_name[head], label=arc)
 
