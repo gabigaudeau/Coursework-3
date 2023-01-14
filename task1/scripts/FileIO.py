@@ -138,20 +138,20 @@ if __name__ == "__main__":
     print("Number of EDS graphs that are complete: {}, incomplete: {}".format(len(complete), len(incomplete)))
     create_final_output(eds_graphs)
 
-    print("[6] Create DGL graph dataset from complete EDS graphs...")
-    dgl_graphs = {}
-    for key in complete:
-        dgl_graphs[key] = eds_to_dgl_graph(eds_graphs[key])
-
-    # Create training-validation split
-    keys = list(dgl_graphs.keys())
-    random.Random(seed_val).shuffle(keys)
-
-    train_keys = keys[:int((len(keys)+1)*.75)]
-    val_keys = keys[int((len(keys)+1)*.75):]
-
-    train_data = [dgl_graphs[key] for key in train_keys]
-    val_data = [dgl_graphs[key] for key in val_keys]
+    # print("[6] Create DGL graph dataset from complete EDS graphs...")
+    # dgl_graphs = {}
+    # for key in complete:
+    #     dgl_graphs[key] = eds_to_dgl_graph(eds_graphs[key])
+    #
+    # # Create training-validation split
+    # keys = list(dgl_graphs.keys())
+    # random.Random(seed_val).shuffle(keys)
+    #
+    # train_keys = keys[:int((len(keys)+1)*.75)]
+    # val_keys = keys[int((len(keys)+1)*.75):]
+    #
+    # train_data = [dgl_graphs[key] for key in train_keys]
+    # val_data = [dgl_graphs[key] for key in val_keys]
 
     print("[7] Generate visual for a single EDS graph...")
     graph = eds_graphs['0024006']

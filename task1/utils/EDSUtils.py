@@ -70,22 +70,29 @@ def annotate_eds(graphs, semlink):
                     for fn_entry in sml:
                         if fn_entry['verb'] == verb:
                             # [a] Add frame to predicate. Currently adding IN and NF.
+                            # Avoid duplicates.
                             if fn_entry["frame"] not in ["IN", "NF"]:
-                                node.predicate = node.predicate + "-fn." + fn_entry["frame"]
+                                if "-fn." not in node.predicate:
+                                    node.predicate = node.predicate + "-fn." + fn_entry["frame"]
                             else:
                                 is_incomplete = True
 
                             # [b] Add argument labels to eds arguments. Currently adding all after (=).
-                            # TODO. Extract argument number and add +1 to match EDS graph
+                            # Extract argument number and add +1 to match EDS graph
                             for argument in fn_entry["args"]:
                                 if 'rel' not in argument:
                                     argument_number = ''
                                     argument_label = ''
                                     if '=' in argument:
                                         split = argument.split('=')
-                                        argument_number = split[0].split('-')[1]
-                                        argument_label = split[1]
-                                    else:
+                                        roles = split[1]
+                                        if ';' in roles:
+                                            argument_number = split[0].split('-')[1]
+                                            num = argument_number[-1]
+                                            argument_number = argument_number.replace(num, str(int(num) + 1))
+                                            # The first label is the VerbNet role, the second is the FrameNet role.
+                                            argument_label = split[1].split(';')[1]
+                                    elif '-' in argument:
                                         split = argument.split('-')
                                         # For e.g. 11:1-ARGM-PRD
                                         if len(split) > 2:
@@ -95,12 +102,12 @@ def annotate_eds(graphs, semlink):
                                         else:
                                             argument_number = split[1]
                                             argument_label = ''
+                                    else:
+                                        print(argument)
 
                                     # Check that the argument is in the EDS graph and that the label is nonempty.
-                                    # TODO. Is an FN incomplete if the arguments are empty?
-                                    # TODO. Potentially look at lnk/variable before enriching.
                                     if argument_number in node.edges.keys():
-                                        if argument_label != "":
+                                        if argument_label != '':
                                             node.edges[argument_number + "-fn." + argument_label] = node.edges[
                                                 argument_number]
                                             del node.edges[argument_number]
