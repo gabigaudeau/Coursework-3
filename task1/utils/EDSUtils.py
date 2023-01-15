@@ -88,8 +88,6 @@ def annotate_eds(graphs, semlink):
                                         roles = split[1]
                                         if ';' in roles:
                                             argument_number = split[0].split('-')[1]
-                                            num = argument_number[-1]
-                                            argument_number = argument_number.replace(num, str(int(num) + 1))
                                             # The first label is the VerbNet role, the second is the FrameNet role.
                                             argument_label = split[1].split(';')[1]
                                     elif '-' in argument:
