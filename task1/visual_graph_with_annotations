@@ -1,0 +1,16 @@
+digraph {
+	udef_q -> _reserve_n_1 [label=BV]
+	_for_p -> _reserve_n_1 [label=ARG1]
+	_for_p -> named [label=ARG2]
+	_the_q -> named [label=BV]
+	card -> named [label=ARG1]
+	_new_a_1 -> named [label=ARG1]
+	"_total_v_1-fn.Amounting_to" -> _reserve_n_1 [label="ARG1-fn.Attribute" color=blue fontcolor=blue]
+	"_total_v_1-fn.Amounting_to" [color=red fontcolor=red]
+	"_total_v_1-fn.Amounting_to" -> _barrel_n_1 [label="ARG2-fn.Value" color=blue fontcolor=blue]
+	"_total_v_1-fn.Amounting_to" [color=red fontcolor=red]
+	udef_q -> _barrel_n_1 [label=BV]
+	card -> _barrel_n_1 [label=ARG1]
+	times -> card [label=ARG2]
+	times -> card [label=ARG3]
+}

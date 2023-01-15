@@ -61,8 +61,10 @@ def visualise_graph(eds, filename):
     output = Digraph(format='png')
     for tail, arc, head in eds.edges:
         if "-fn." in arc:
-            output.edge(tail_name=node_name[tail], head_name=node_name[head], label=arc, color="blue")
-            output.node(name=node_name[tail], color="red")
+            output.edge(tail_name=node_name[tail], head_name=node_name[head], label=arc, color="blue", fontcolor="blue")
+            output.node(name=node_name[tail], color="red", fontcolor="red")
+        else:
+            output.edge(tail_name=node_name[tail], head_name=node_name[head], label=arc)
 
     output.render('../visual_graph_' + filename)
 
