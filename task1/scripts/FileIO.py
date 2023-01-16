@@ -35,17 +35,8 @@ def traverse_dir(path, operator):
     return sentence_set
 
 
-def create_eds_output(deepbank):
-    text_file = open("../deepbank_eds.txt", "w")
-    for key in deepbank.keys():
-        entry = deepbank.get(key)
-        output = entry["doc"] + entry["sent"] + "\n" + entry["string"] + "\n\n"
-        text_file.write(output)
-    text_file.close()
-
-
-def create_final_output(graphs):
-    text_file = open("../final_eds.txt", "w")
+def create_eds_output(graphs, filename):
+    text_file = open(filename, "w")
     for key in graphs.keys():
         entry = graphs.get(key)
         decoded = eds.encode(entry)
@@ -127,7 +118,7 @@ if __name__ == "__main__":
     print("[4] Converting DB to EDS graphs...")
     eds_graphs = convert_to_eds(deepbank)
     # Create deepbank_eds.txt file with all DB's EDS graphs.
-    create_final_output(eds_graphs)
+    create_eds_output(eds_graphs, "../deepbank_eds.txt")
 
     print("[5] Generate visual for an EDS graph...")
     graph = eds_graphs['0024006']
@@ -136,7 +127,7 @@ if __name__ == "__main__":
     print("[6] Annotate EDS graphs with SemLink data...")
     eds_graphs, complete, incomplete = annotate_eds(eds_graphs, semlink)
     print("Number of EDS graphs that are complete: {}, incomplete: {}".format(len(complete), len(incomplete)))
-    create_final_output(eds_graphs)
+    create_eds_output(eds_graphs, "../final_eds.txt")
 
     print("[7] Generate visual for an annotated EDS graph...")
     graph = eds_graphs['0024006']
