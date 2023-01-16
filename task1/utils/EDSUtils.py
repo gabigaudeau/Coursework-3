@@ -8,14 +8,6 @@ import re
 from delphin.codecs import eds
 
 
-# for key in complete:
-#     print(semlink[key])
-#     print(deepbank[key]['src'])
-
-# item = graphs.popitem()
-# key = item[0]
-# graph = item[1]
-#
 # print(graph.top)            # e7
 # print(graph.lnk)            #
 # print(graph.surface)        # None

@@ -5,7 +5,6 @@
 # ------- IMPORTS -------
 import os
 import os.path
-import random
 
 from delphin.codecs import eds
 
@@ -13,7 +12,7 @@ from task1.loaders.DeepBankLoader import DeepBankLoader
 from task1.loaders.SemLinkLoader import SemLinkLoader
 from task1.loaders.PTBLoader import PTBLoader
 from task1.utils.EDSUtils import convert_to_eds, annotate_eds
-from task1.utils.GraphUtils import eds_to_dgl_graph, visualise_graph
+from task1.utils.GraphUtils import visualise_graph
 
 
 # ------- FIELDS -------
@@ -124,11 +123,11 @@ if __name__ == "__main__":
           )
 
     print("========================Start Main Process=========================")
-    # Create deepbank_eds.txt file with all DB's EDS graphs.
-    create_eds_output(deepbank)
 
     print("[4] Converting DB to EDS graphs...")
     eds_graphs = convert_to_eds(deepbank)
+    # Create deepbank_eds.txt file with all DB's EDS graphs.
+    create_final_output(eds_graphs)
 
     print("[5] Generate visual for an EDS graph...")
     graph = eds_graphs['0024006']
@@ -142,21 +141,6 @@ if __name__ == "__main__":
     print("[7] Generate visual for an annotated EDS graph...")
     graph = eds_graphs['0024006']
     visualise_graph(graph, "with_annotations")
-
-    # print("[8] Create DGL graph dataset from complete EDS graphs...")
-    # dgl_graphs = {}
-    # for key in complete:
-    #     dgl_graphs[key] = eds_to_dgl_graph(eds_graphs[key])
-    #
-    # # Create training-validation split
-    # keys = list(dgl_graphs.keys())
-    # random.Random(seed_val).shuffle(keys)
-    #
-    # train_keys = keys[:int((len(keys)+1)*.75)]
-    # val_keys = keys[int((len(keys)+1)*.75):]
-    #
-    # train_data = [dgl_graphs[key] for key in train_keys]
-    # val_data = [dgl_graphs[key] for key in val_keys]
 
     print("Main Process Complete.")
     print("========================End Main Process=========================")
